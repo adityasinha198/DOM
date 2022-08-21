@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <form onsubmit="saveToLocalStorage(event)">
+            <label> Choose expenseamount:</label>
+            <input type="number" id="username" name="username"  required/>
+            <label> Choose description:</label>
+            <input list="desp" id="email" name="emailId">
+            <datalist id="desp">
+                <option value =" Hollywood Movies">
+                <option value="Bollywood Movies">
+                <option value="Cricket">
+                <option value="Badminton">
+                <option value="Pizza">
+                <option value="Burger">
+            </datalist>
+            <label> Choose category:</label>
+            <select id="phonenumber" name="phonenumber">
+                <option value=" Movies">Movies</option>
+                <option value=" Sports">Sports</option>
+                <option value=" Foods">Foods</option>
+            </select>
+            
+            <button>Add Expense </button>
+        </form>
+        <ul id='listOfUsers'></ul>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+        <script>
+            function saveToLocalStorage(event) {
+                event.preventDefault();
+                const name = event.target.username.value;
+                const email = event.target.emailId.value;
+                const phonenumber = event.target.phonenumber.value;
+                // localStorage.setItem('name', name);
+                // localStorage.setItem('email', email);
+                // localStorage.setItem('phonenumber', phonenumber)
+                const obj = {
+                    name,
+                    email,
+                    phonenumber
+                }
+                
+                axios
+                .post("https://crudcrud.com/api/638abaa2ae274dc8a23ea12b47dfda7c/appointapp",obj)
+                
+                .then((res)=>{
+                    showNewUserOnScreen(res.data)
+                })
+                .catch((err)=>{
+                    document.body.innerHTML=document.body.innerHTML+"<h4>Something went wrong </h4>"
+                })
+                //localStorage.setItem(obj.email, JSON.stringify(obj))
+
+                //showNewUserOnScreen(obj)
+            }
+
+            window.addEventListener("DOMContentLoaded", () => {
+               
+                
+                axios.get("https://crudcrud.com/api/638abaa2ae274dc8a23ea12b47dfda7c/appointapp")
+
+                .then((res)=>{
+                    
+                    for(let i =0;i<res.data.length;i++){
+                        showNewUserOnScreen(res.data[i])
+                    }
+                    })
+                .catch((err)=>{
+                console.log("Something went wrong")
+                })
+            })
+            
+
+           
+
+            function showNewUserOnScreen(user){
+                const parentNode = document.getElementById('listOfUsers');
+                const childHTML = `<li id=${user.email}> ${user.name} - ${user.email}-${user.phonenumber}
+                                        <button onclick=deleteUser('${user._id}','${user.email}')> Delete User </button>
+                                        <button onclick=editUserDetails('${user.email}','${user.name}','${user.phonenumber}','${user._id}')>Edit User </button>
+                                     </li>`
+                
+                
+                parentNode.innerHTML = parentNode.innerHTML + childHTML;
+            }
+
+
+            
+            
+            function editUserDetails(emailId,name,phonenumber,uid){
+
+document.getElementById('email').value = emailId;
+document.getElementById('username').value = name;
+document.getElementById('phonenumber').value =phonenumber;
+
+
+deleteUser(uid,emailId)
+};
+
+          
+            // deleteUser('abc@gmail.com')
+
+            function deleteUser(Id,emailId){
+                
+                console.log(Id)
+                console.log(emailId)
+   
+                axios.delete(`https://crudcrud.com/api/638abaa2ae274dc8a23ea12b47dfda7c/appointapp/${Id}`)
+                .then(res=>{
+                
+                   
+                })
+                .catch(err=>{console.log("ALl users are deleted")})
+
+                removeUserFromScreen(emailId)
+                
+                
+                //console.log(emailId)
+                //localStorage.removeItem(emailId);
+             
+
+            }
+
+
+
+
+
+
+
+            function removeUserFromScreen(emailId){
+                const parentNode = document.getElementById('listOfUsers');
+                const childNodeToBeDeleted = document.getElementById(emailId);
+
+                parentNode.removeChild(childNodeToBeDeleted)
+            }
+
+
+
+
+
+
+
+        </script>
+
+
+    </body>
+</html>
